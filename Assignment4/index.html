@@ -1,0 +1,305 @@
+<html>
+
+<head>
+    <title>Sortable Linked List</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <style>
+    .newLink {
+		margin-right: 5em;
+		margin-top: 2em;
+		padding: 5px;
+    }
+    .item span {
+        float: left;
+        font-size: 20px;
+    }
+
+    .item a {
+        float: right;
+        font-size: 20px;
+        text-decoration: none;
+    }
+
+    .item:after {
+        content: '\2193';
+        font-size: 24px;
+        display: block;
+        /*padding-top: 32px;*/
+    }
+
+    .item {
+        list-style: none;
+        font-size: 30px;
+        text-align: center;
+        background: white;
+        height: 50px;
+    }
+
+    .textright {
+        text-align: right;
+        float: right;
+        position: fixed;
+        right: 0;
+        top: 15px;
+    }
+
+    .textcenter {
+        text-align: center;
+        padding-top: 20px;
+    }
+    </style>
+    <script src='jquery-1.11.3.js'></script>
+    <script src='Sortable.min.js'></script>
+    <script>
+    var linkedList = {
+        initialize: function(initLL, head, tail) {
+            //initLL is an array of Node Objects --- [{id:"", next:"", data: {}}, {}, {}],
+            linkedList.nodes = initLL;
+            linkedList.head = head;
+            linkedList.tail = tail;
+        },
+        getListIDsFromTail: function() {},
+        getListIDsFromHead: function() {
+            var count = linkedList.nodes.length;
+            var retArr = [];
+            var pointer = linkedList.head.id;
+            while (count > 0) {
+                if (pointer === null) {
+                    retArr[retArr.length] = "NULL";
+                    break;
+                }
+                // var pointer = linkedList.getNode(pointer).next;
+                retArr[retArr.length] = linkedList.getNode(pointer).id;
+                if (linkedList.getNode(pointer).next) {
+                    pointer = linkedList.getNode(pointer).next.id;
+                }
+
+                count--;
+            }
+            return retArr;
+        },
+        nodes: [],
+        head: null,
+        tail: null,
+
+        insertAt: function(index, data, relocID) {
+            var newID = new Date().getTime();
+            // var length = linkedList._length;
+            var beforeNodeID = beforeNodeID || linkedList.head.id;
+            var current = linkedList.head,
+                previous = null,
+                length = linkedList._length;
+            newNode = {
+                id: relocID,
+                data: data,
+                next: beforeNodeID,
+                prev: previous
+            };
+            var position = 0;
+
+            // check for index out-of-bounds
+            if (index < 0 || index > linkedList._length) {
+                return false;
+            }
+
+            // if index is 0, we just need to insert the first node
+            if (index === 0) {
+                linkedList.addNodeBefore(data);
+            }
+
+            while (position < index) {
+                previous = current;
+                current = linkedList.head.next;
+                position += 1;
+            }
+
+            if (current.prev !== null) {
+                current.prev.next = newNode;
+            }
+            newNode.prev = current.prev;
+            current.prev = newNode;
+            newNode.next = current;
+            // if (index === length) {
+            // 	newNode.next = current;
+            // }
+
+
+            linkedList.nodes.splice(index, 0, newNode);
+            linkedList._length++;
+
+        },
+        addNodeBefore: function(nodeData, beforeNodeID, nodeID) { //alter for A4
+            var newID = nodeID || new Date().getTime();
+            beforeNodeID = beforeNodeID;
+            var prevID = null;
+            var newNode = {
+                id: newID,
+                data: nodeData,
+                next: beforeNodeID,
+                prev: prevID
+            };
+            if (linkedList.head !== null) {
+                // linkedList.head = newID;
+                linkedList.tail.next = newNode;
+                newNode.prev = linkedList.tail;
+                linkedList.tail = newNode;
+            } else {
+                linkedList.head = newNode;
+                linkedList.tail = newNode;
+            }
+
+            if (beforeNodeID) {
+                var prevPos = linkedList.getParentPos(beforeNodeID);
+                if (prevPos >= 0)
+                    linkedList.nodes[prevPos].next = newID;
+            }
+            if (beforeNodeID === linkedList.head) {
+                linkedList.head.id = newID;
+                // console.log('No node before');
+            }
+            linkedList.nodes[linkedList.nodes.length] = newNode;
+        },
+        isEmpty: function() {
+            if (linkedList.head === null) {
+                return true;
+            }
+            return false;
+        },
+        deleteNode: function(id) { //alter for A4
+            var pos = linkedList.getNodePos(id);
+            var prevPos = linkedList.getParentPos(id);
+            var next = linkedList.getNode(id).next;
+            if (prevPos >= 0)
+                linkedList.nodes[prevPos].next = next;
+            linkedList.nodes.splice(pos, 1);
+            if (id == linkedList.head) {
+                linkedList.head = next;
+            }
+        },
+        getNodeAt: function(pos) {
+            return linkedList.nodes[pos];
+        },
+        getNodeFromPos: function(pos) {
+            var ordList = linkedList.getListIDsFromHead();
+            return ordList[pos];
+        },
+        swapNodes: function(fromPos, toPos) { //alter for A4
+            var moveData = linkedList.getNodeAt(fromPos);
+            var deleteID = linkedList.getNodeAt(fromPos).id;
+            var insertBeforeID = linkedList.getNodeAt(toPos).id;
+
+
+            linkedList.deleteNode(deleteID);
+            linkedList.insertAt(toPos, moveData.data, moveData.id);
+            console.log(fromPos);
+            console.log(toPos);
+        },
+
+        getParent: function(id) {
+            var list = linkedList.nodes;
+            var ret = null;
+            for (var i = 0; i < list.length; i++) {
+                if (linkedList.getNodePos(list[i].id).next === id) {
+                    ret = list[i];
+                    break;
+                }
+            }
+            return ret;
+        },
+        getChild: function(id) { //complete for A4
+        },
+        getNode: function(id) {
+            var list = linkedList.nodes;
+            var ret = null;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].id === id) {
+                    ret = list[i];
+                    break;
+                }
+            }
+            return ret;
+        },
+        getParentPos: function(id) {
+            var pos = -1;
+            var list = linkedList.nodes;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].next === id) {
+                    pos = i;
+                    break;
+                }
+            }
+            return pos;
+        },
+        getNodePos: function(id) {
+            var pos = -1;
+            var list = linkedList.nodes;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].id === id) {
+                    pos = i;
+                    break;
+                }
+            }
+            return pos;
+        }
+    };
+
+
+    /*
+    var x = 5;
+    var y = 10;
+    // your code here
+    var swap;
+    swap = x;
+    x = y;
+    y = swap;
+    // end code
+    console.log(x);
+    console.log(y);
+    */
+
+    var sortable;
+
+    function startUp() {
+        var el = document.getElementById('theList');
+        sortable = Sortable.create(el, {
+            onEnd: function(evt) {
+                linkedList.swapNodes(evt.oldIndex, evt.newIndex);
+            }
+        });
+
+    }
+
+    function addLink() {
+        var text = prompt("Add new node:");
+        if (text === null) return;
+        var id = new Date().getTime();
+        $("#theList").append("<li class='item " + id + "'>" + text +
+            "<span clas='idNum'>" + id + "</span>" +
+            "<a class='btn btn-danger' href='javascript:removeLink(" + id + ")'> X </a>" + "</li>"
+        );
+        linkedList.addNodeBefore(text, null, id);
+    }
+
+    function removeLink(id) {
+        if (confirm("Delete node ID: " + id)) {
+            $("#theList ." + id).remove();
+            linkedList.deleteNode(id);
+        }
+    }
+    </script>
+</head>
+
+<body onload='startUp()'>
+    <div class="container">
+        <h1 class="textcenter"> Sortable Linked List - Assignment 4 </h1>
+        <h2 class="textcenter">Aldo Mucino-Martinez</h2>
+        <hr>
+        <a class='textright newLink' href='javascript:addLink()'> + New Node</a>
+        <div class="item head"> HEAD </div>
+        <ul id="theList"> </ul>
+        <div class="textcenter"> NULL </div>
+    </div>
+</body>
+
+</html>
