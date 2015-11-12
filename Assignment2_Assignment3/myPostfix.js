@@ -43,6 +43,62 @@ function isPrecGreater(a, b) {
     return false;
 }
 
+var operations = {
+    "+": function(a, b) {
+        return a + b;
+    },
+    "-": function(a, b) {
+        return a - b;
+    },
+    "*": function(a, b) {
+        return a * b;
+    },
+    "/": function(a, b) {
+        return a / b;
+    },
+    "^": function(a, b) {
+        return Math.pow(a, b);
+    }
+};
+
+
+function postfixResult(postfix) {
+
+  var stack = new Stack();
+  var ch; // current char
+
+  for (var k = 0, length = postfix.length; k < length;  k++) {
+
+    ch = postfix[k];
+
+
+    if (/\d/.test(ch))
+      stack.push(ch);
+
+
+    else if (isOperator(ch)) {
+
+      var b = stack.pop();
+      var a = stack.pop();
+      a = parseInt(a);
+      b = parseInt(b);
+
+
+      var value = operations[ch](a,b);
+      console.log(value);
+      stack.push(value);
+
+    }
+
+  }
+
+  if (stack.length > 1)
+    throw "ParseError: " + postfix + ", stack: " + stack;
+
+  return stack.stackToString();
+
+}
+
 function getPostfix (infix) {
     var stack = new Stack();
     var postfix = new Stack();
@@ -92,8 +148,11 @@ function getPostfix (infix) {
         }
     }
     updateVisualization(i,infix,postfix);
-    document.getElementById('visual').innerHTML += "<h1> Result: " + postfix.stackToString() + "</h1><hr>";
+    document.getElementById('visual').innerHTML += "<h1> Result: " + postfix.stackToString() + "</h1><hr>" +
+     "<h1> Evaluation: " + postfixResult(postfix.stackToString()) + "</h1><hr>";
+    var infixExp = document.getElementById("inputEq").value;
     console.log(postfix.stackToString());
+    console.log(postfixResult(postfix.stackToString()));
     return postfix._storage;
 }
 
@@ -130,7 +189,7 @@ function updateVisualization(step, tokens, postfix) {
     }
     outS += "<span class='smallBox'><b>&lt;-</b></span>";
     outS += "</div>";
-    //update postfix string
+    //update postfix postfix
     tokens = postfix.stackToString();
     outS += "<div>";
     outS += "<h2>Postfix:</h2>";
@@ -205,10 +264,3 @@ Stack.prototype = {
         return retArr;
     }
 };
-
-var s = new Stack();
-s.push('Aldo');
-s.push('Buddy');
-s.push('Sandwich');
-
-var myArr = [1,2,3];
