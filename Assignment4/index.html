@@ -105,7 +105,13 @@
 
             // if index is 0, we just need to insert the first node
             if (index === 0) {
-                linkedList.addNodeBefore(data);
+                // linkedList.addNodeBefore(data);
+            }
+
+            if (current.head) {
+                delete linkedlist.head;
+                linkedlist.head = newNode;
+                delete linkedlist.tail;
             }
 
             while (position < index) {
@@ -120,9 +126,8 @@
             newNode.prev = current.prev;
             current.prev = newNode;
             newNode.next = current;
-            // if (index === length) {
-            // 	newNode.next = current;
-            // }
+
+
 
 
             linkedList.nodes.splice(index, 0, newNode);
