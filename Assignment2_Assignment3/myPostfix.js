@@ -165,7 +165,6 @@ function allClear()
 function updateVisualization(step, tokens, postfix) {
 
     var tokenStack = new Stack();
-    // tokenStack = tokens;
 
     var outS = "<hr><h1>Step " + (step + 1) + "</h1>";
     //update infix
