@@ -6,7 +6,7 @@ function calculatePostfix()
   var infix = document.getElementById("inputEq").value;
   var tokens = [];
   for (var i = 0; i < infix.length; i++){
-    if(infix[i] != " "){
+    if(infix[i] !== ""){
       tokens[tokens.length] = infix[i];
     }
   }
