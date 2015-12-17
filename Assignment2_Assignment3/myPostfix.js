@@ -11,7 +11,7 @@ function calculatePostfix()
     }
   }
   getPostfix(tokens);
-
+  
 }
 
 function isOperator(t) {
