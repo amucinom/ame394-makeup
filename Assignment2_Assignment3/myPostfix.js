@@ -1,6 +1,5 @@
 var operators = ["*", "/", "+", "-", "^"];
 var parens = ["(", ")"];
-console.log('Aldo');
 
 function calculatePostfix() {
 	var infix = document.getElementById("inputEq").value;
