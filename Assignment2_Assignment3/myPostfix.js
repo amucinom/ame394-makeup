@@ -10,6 +10,7 @@ function calculatePostfix() {
 		}
 	}
 	getPostfix(tokens);
+	console.log('Tokens analysed');
 
 }
 
